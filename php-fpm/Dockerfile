@@ -1,5 +1,7 @@
 FROM debian:stretch
 
+ARG PHPFPM_EXTRA_PACKAGES
+
 COPY files/ /tmp/files/
 RUN /tmp/files/configure
 
