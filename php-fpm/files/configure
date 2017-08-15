@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -e
+cp /tmp/files/default-release.conf /etc/apt/apt.conf.d/default-release
+apt-get update
+apt-get install -y ssmtp php7.0-fpm php7.0-mysql php7.0-imagick php7.0-ldap php7.0-xml php7.0-mbstring php7.0-mcrypt php7.0-gd php7.0-apc git ffmpeg ghostscript
+
+rm /etc/php/7.0/fpm/pool.d/www.conf
+cp -a /tmp/files/app-defaults.conf /etc/php/7.0/fpm
+
+cp /tmp/files/entrypoint /root/entrypoint
+
+addgroup hostgroup
+adduser --gecos 'Host User' --ingroup hostgroup --disabled-password hostuser
+su - hostuser -c 'git config --global user.email hostuser@php-fpm'
+su - hostuser -c 'git config --global user.name "Host User"'

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -e
+
+apt-get update
+apt-get install -y bsd-mailx postfix rsyslog
+
+cp /tmp/files/rsyslog-stderr.conf /etc/rsyslog.d
+cp /tmp/files/entrypoint /sbin/entrypoint
+
+addgroup hostgroup
+adduser --gecos 'Host User' --ingroup hostgroup --disabled-password hostuser

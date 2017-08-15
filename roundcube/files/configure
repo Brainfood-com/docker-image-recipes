@@ -1,0 +1,22 @@
+#!/bin/sh
+
+set -e
+
+export DEBIAN_FRONTEND=noninteractive
+
+apt-get update
+apt-get install -y ssmtp roundcube-sqlite3 roundcube roundcube-plugins
+
+sed -i "/default_host/c\$config['default_host'] = 'imap';" /etc/roundcube/config.inc.php
+sed -i "/smtp_server/c\$config['smtp_server'] = 'smtp';" /etc/roundcube/config.inc.php
+
+for plugin in jqueryui zipdownload; do
+	cp -a /var/lib/roundcube/plugins/$plugin/config.inc.php.dist /etc/roundcube/plugins/$plugin
+done
+
+cp /tmp/files/apache-mail-container.conf /etc/apache2/conf-enabled
+
+cp /tmp/files/entrypoint /sbin/entrypoint
+
+addgroup hostgroup
+adduser --gecos 'Host User' --ingroup hostgroup --disabled-password hostuser

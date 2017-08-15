@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -ex
+
+node_home="$(getent passwd node | cut -f 6 -d :)"
+
+if [[ $GID ]]; then
+	old_gid=$(getent group node | cut -f 3 -d :)
+	groupmod -g $GID node
+	find "$node_home" -gid $old_gid -print0 | xargs -0r chgrp node
+fi
+if [[ $UID ]]; then
+	usermod -u $UID node
+fi
+if [[ -e package.json ]]; then
+	sudo -u node npm install
+fi
+exec "$@"

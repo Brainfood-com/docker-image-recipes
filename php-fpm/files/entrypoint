@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -ex
+
+hostuser_home="$(getent passwd hostuser | cut -f 6 -d :)"
+
+if [[ $GID ]]; then
+	old_gid=$(getent group hostgroup | cut -f 3 -d :)
+	groupmod -g $GID hostgroup
+	find "$hostuser_home" -gid $old_gid -print0 | xargs -0r chgrp hostgroup
+fi
+if [[ $UID ]]; then
+	usermod -u $UID hostuser
+fi
+mkdir -p /run/php
+
+update_sapi_conf() {
+	declare sapi="$1" file
+	shift
+	find "/etc/php/7.0/$sapi/conf.d" -name '97-app-*' -delete
+	for file in /etc/php/7.0/app.conf.d/*; do
+		if [[ -r $file ]]; then
+			ln -sf "$file" "/etc/php/7.0/$sapi/conf.d/97-app-${file##*/}"
+		fi
+	done
+}
+update_sapi_conf fpm
+
+exec "$@"

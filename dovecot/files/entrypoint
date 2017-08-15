@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -ex
+
+hostuser_home="$(getent passwd hostuser | cut -f 6 -d :)"
+
+if [[ $GID ]]; then
+	old_gid=$(getent group hostgroup | cut -f 3 -d :)
+	groupmod -g $GID hostgroup
+	find "$hostuser_home" -gid $old_gid -print0 | xargs -0r chgrp hostgroup
+fi
+if [[ $UID ]]; then
+	usermod -u $UID hostuser
+fi
+
+if [[ $DOVECOT_HOSTUSER_PASSWORD ]]; then
+	echo "hostuser:$DOVECOT_HOSTUSER_PASSWORD" | chpasswd
+fi
+
+exec "$@"

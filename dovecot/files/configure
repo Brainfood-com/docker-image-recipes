@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -e
+
+mkdir -p /etc/dovecot/conf.d/
+cp /tmp/files/dovecot.conf /etc/dovecot/conf.d/99-docker.conf
+
+apt-get update
+apt-get install -y ssmtp dovecot-sqlite dovecot-imapd
+
+cp /tmp/files/entrypoint /sbin/entrypoint
+
+addgroup hostgroup
+adduser --gecos 'Host User' --ingroup hostgroup --disabled-password hostuser
