@@ -13,3 +13,5 @@ addgroup hostgroup
 adduser --gecos 'Host User' --ingroup hostgroup --disabled-password hostuser
 su - hostuser -c 'git config --global user.email hostuser@php-fpm'
 su - hostuser -c 'git config --global user.name "Host User"'
+
+rm -rf /tmp/files

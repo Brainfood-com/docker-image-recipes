@@ -5,3 +5,5 @@ apt-get update
 apt-get install -y ssmtp nginx libnginx-mod-http-subs-filter $NGINX_EXTRA_PACKAGES
 rm /etc/nginx/sites-enabled/default
 cp -a /tmp/files/entrypoint.sh /sbin
+
+rm -rf /tmp/files

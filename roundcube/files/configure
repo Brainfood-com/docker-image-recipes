@@ -20,3 +20,5 @@ cp /tmp/files/entrypoint /sbin/entrypoint
 
 addgroup hostgroup
 adduser --gecos 'Host User' --ingroup hostgroup --disabled-password hostuser
+
+rm -rf /tmp/files
