@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -e
+apt-get update
+apt-get install -y ssmtp mysql-server
+
+mkdir /var/lib/container
+tar -cC /var/lib/mysql/ . | gzip -9v > /var/lib/container/var_lib_mysql.tar.gz
+rm -rf /var/lib/mysql
+mkdir /var/lib/mysql
+
+cp -a /tmp/files/entrypoint /sbin
+
+rm -rf /tmp/files

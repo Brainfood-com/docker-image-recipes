@@ -1,0 +1,46 @@
+#!/bin/bash
+
+set -ex
+
+_mysql() {
+	mysqld_safe "$@"
+}
+
+if [[ $GID ]]; then
+	old_gid=$(getent group mysql | cut -f 3 -d :)
+	groupmod -g $GID mysql
+else
+	found_errors+=("gid not set")
+fi
+
+if [[ $UID ]]; then
+	usermod -u $UID mysql
+else
+	found_errors+=("uid not set")
+fi
+
+if [[ $(find /var/lib/mysql -maxdepth 1 -mindepth 1|wc -l) = 0 ]]; then
+	mkdir -p /var/lib/mysql
+	zcat /var/lib/container/var_lib_mysql.tar.gz | tar -C /var/lib/mysql -xf -
+fi
+
+if [[ ${#found_errors[*]} -gt 0 ]]; then
+	for error in "${found_errors[@]}"; do
+		echo "$error"
+	done
+	exit 1
+fi
+
+declare -i i=0
+mysqld_safe --skip-networking &
+while eval [[ \$DB_INFO_$i ]]; do
+	IFS=: eval declare -a DB_INFO=\(\$DB_INFO_$i\)
+	echo "database=${DB_INFO[0]} user=${DB_INFO[1]} password=${DB_INFO[2]}" 1>&2
+	mysql --defaults-extra-file=/etc/mysql/debian.cnf -e "CREATE DATABASE IF NOT EXISTS \`${DB_INFO[0]}\` DEFAULT CHARACTER SET \`utf8mb4\` COLLATE \`utf8mb4_ci\`;"
+	mysql --defaults-extra-file=/etc/mysql/debian.cnf -e "GRANT ALL PRIVILEGES ON \`${DB_INFO[0]}\`.* TO '${DB_INFO[1]}' IDENTIFIED BY '${DB_INFO[2]}';"
+	i=$(($i + 1))
+done
+mysql --defaults-extra-file=/etc/mysql/debian.cnf -e "shutdown;"
+wait
+
+exec "$@"
