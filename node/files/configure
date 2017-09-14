@@ -5,6 +5,6 @@ apt-get update
 apt-get install -y ssmtp sudo $NODE_EXTRA_PACKAGES
 #npm install -g gulp grunt
 
-cp /tmp/files/entrypoint /root/entrypoint
+cp /tmp/files/entrypoint /sbin/entrypoint
 
 rm -rf /tmp/files
