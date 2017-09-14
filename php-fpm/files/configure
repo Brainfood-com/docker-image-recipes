@@ -7,7 +7,7 @@ apt-get install -y sudo ssmtp php7.0-fpm php7.0-mysql php7.0-imagick php7.0-ldap
 rm /etc/php/7.0/fpm/pool.d/www.conf
 cp -a /tmp/files/app-defaults.conf /etc/php/7.0/fpm
 
-cp /tmp/files/entrypoint /root/entrypoint
+cp /tmp/files/entrypoint /sbin/entrypoint
 
 addgroup hostgroup
 adduser --gecos 'Host User' --ingroup hostgroup --disabled-password hostuser
