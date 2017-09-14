@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:stretch-slim
 
 COPY files/ /tmp/files/
 RUN /tmp/files/configure
