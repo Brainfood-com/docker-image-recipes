@@ -3,7 +3,6 @@
 set -e
 apt-get update
 apt-get install -y ssmtp sudo $NODE_EXTRA_PACKAGES
-#npm install -g gulp grunt
 
 cp /tmp/files/entrypoint /sbin/entrypoint
 
