@@ -1,0 +1,36 @@
+This repository contains a series of simple docker image recipes.  These are
+meant to be referenced via docker-compose, and built for each project
+separately.  No sharing of images.  This provides sanity for each project, as
+you don't have to worry about an image changing underneath you.  It also means
+that you can be certain you can rebuild on your own whenever the situation
+calls for it.
+
+Here are the best practices in these files:
+
+* Generally, any image listed here should run without any external
+  dependencies.  No includes from other images, etc.  This makes it easier to
+  understand and extend.
+
+* Each Dockerfile is designed to have minimal layers.  This makes rebuilds
+  faster, as there are less docker-runs.  It also makes many things easier to
+  accomplish, as there is a real shell script that can do sophisticated
+  things.
+
+* Images also tend to make use of standard, unmodified debian packages.  Let
+  someone else do the hard-work of system integration, while these recipes
+  then just do slight tweaks.
+
+* Any files that need to be shared between a host and a container should make
+  use of UID/GID being sent in from the host.  The daemon in the container
+  should run as the UID/GID, and it's files changed to have that ownership.
+
+  During entrypoint, the target container user is then modified to have the
+  correct uid/gid setting.  If there is no target user, then one should be
+  added during the image build, generally calling it hostuser/hostgroup.
+
+* Daemons that have complex binary file setups should have those files created
+  during image build, then the entire structure placed in a tarball.  The
+  entrypoint can then extract this seed tarball, but only if the target
+  directory is empty.  This allows for the volume mounting of these
+  directories from the host.  Make certain the uid/gid mapping is sane when
+  this occurs.
