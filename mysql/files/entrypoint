@@ -6,29 +6,18 @@ _mysql() {
 	mysqld_safe "$@"
 }
 
-if [[ $GID ]]; then
+if [[ $GID && $GID -ne 0 ]]; then
 	old_gid=$(getent group mysql | cut -f 3 -d :)
 	groupmod -g $GID mysql
-else
-	found_errors+=("gid not set")
 fi
 
-if [[ $UID ]]; then
+if [[ $UID && $UID -ne 0 ]]; then
 	usermod -u $UID mysql
-else
-	found_errors+=("uid not set")
 fi
 
 if [[ $(find /var/lib/mysql -maxdepth 1 -mindepth 1|wc -l) = 0 ]]; then
 	mkdir -p /var/lib/mysql
 	zcat /var/lib/container/var_lib_mysql.tar.gz | tar -C /var/lib/mysql -xf -
-fi
-
-if [[ ${#found_errors[*]} -gt 0 ]]; then
-	for error in "${found_errors[@]}"; do
-		echo "$error"
-	done
-	exit 1
 fi
 
 declare -i i=0
