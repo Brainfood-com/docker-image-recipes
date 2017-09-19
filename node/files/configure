@@ -1,6 +1,7 @@
 #!/bin/sh
 
 set -e
+cp /tmp/files/jessie-backports.list /etc/apt/sources.list.d
 apt-get update
 apt-get install -y ssmtp sudo $NODE_EXTRA_PACKAGES
 
