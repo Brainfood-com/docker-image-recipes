@@ -17,6 +17,11 @@ find "$node_home" \
 	'(' -not -group node -exec chgrp node '{}' + ')' -o \
 	-true
 
+npm -g config set http_proxy "$http_proxy"
+npm -g config set https_proxy "$http_proxy"
+sudo -u node npm config set http_proxy "$http_proxy"
+sudo -u node npm config set https_proxy "$http_proxy"
+
 if [[ -e package.json ]]; then
 	sudo -u node npm install
 fi
