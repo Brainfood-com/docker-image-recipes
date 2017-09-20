@@ -1,0 +1,13 @@
+#!/bin/sh
+
+set -e
+apt-get update
+mkdir -p /usr/share/man/man1
+apt-get install -y ssmtp sudo openjdk-8-jdk $JAVA_EXTRA_PACKAGES
+
+cp /tmp/files/entrypoint /sbin/entrypoint
+
+addgroup hostgroup
+adduser --gecos 'Host User' --ingroup hostgroup --disabled-password hostuser
+
+rm -rf /tmp/files
