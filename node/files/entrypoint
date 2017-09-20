@@ -5,13 +5,18 @@ set -ex
 node_home="$(getent passwd node | cut -f 6 -d :)"
 
 if [[ $GID && $GID -ne 0 ]]; then
-	old_gid=$(getent group node | cut -f 3 -d :)
 	groupmod -g $GID node
-	find "$node_home" -gid $old_gid -print0 | xargs -0r chgrp node
 fi
 if [[ $UID && $UID -ne 0 ]]; then
 	usermod -u $UID node
 fi
+
+find "$node_home" \
+	'(' -not -user node -a -not -group node -exec chown node:node '{}' + ')' -o \
+	'(' -not -user node -exec chown node '{}' + ')' -o \
+	'(' -not -group node -exec chgrp node '{}' + ')' -o \
+	-true
+
 if [[ -e package.json ]]; then
 	sudo -u node npm install
 fi
