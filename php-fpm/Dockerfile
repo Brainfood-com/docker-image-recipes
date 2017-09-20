@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:stretch-slim
 
 ARG PHPFPM_EXTRA_PACKAGES
 
