@@ -1,4 +1,4 @@
-FROM node
+FROM debian:stretch-slim
 
 ARG NODE_EXTRA_PACKAGES
 

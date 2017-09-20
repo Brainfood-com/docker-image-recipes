@@ -1,9 +1,20 @@
 #!/bin/sh
 
 set -e
-cp /tmp/files/jessie-backports.list /etc/apt/sources.list.d
 apt-get update
-apt-get install -y ssmtp sudo $NODE_EXTRA_PACKAGES
+apt-get install -y apt-transport-https gnupg
+cp /tmp/files/nodesource.list /etc/apt/sources.list.d
+cp /tmp/files/nodesource.gpg.key /etc/apt/trusted.gpg.d/nodesource.asc
+apt-get update
+
+apt-get install -y ssmtp sudo nodejs npm $NODE_EXTRA_PACKAGES
+
+if ! [ "z$NPM_GLOBAL_INSTALL" = "z" ]; then
+	npm install -g $NPM_GLOBAL_INSTALL
+fi
+
+addgroup node
+adduser --gecos 'node' --ingroup node --disabled-password node
 
 cp /tmp/files/entrypoint /sbin/entrypoint
 
