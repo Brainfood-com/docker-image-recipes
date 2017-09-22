@@ -22,7 +22,18 @@ npm -g config set https_proxy "$http_proxy"
 sudo -u node npm config set http_proxy "$http_proxy"
 sudo -u node npm config set https_proxy "$http_proxy"
 
-if [[ -e package.json ]]; then
-	sudo -u node npm install
-fi
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+		(--auto-install)
+			if [[ -e package.json ]]; then
+				sudo -u node npm install
+			fi
+			shift
+			;;
+		(*)
+			break
+			;;
+	esac
+done
+
 exec "$@"
