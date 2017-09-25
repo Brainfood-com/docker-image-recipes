@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 TARGET_USER=hostuser
 TARGET_GROUP=hostgroup

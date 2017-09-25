@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 node_home="$(getent passwd node | cut -f 6 -d :)"
 

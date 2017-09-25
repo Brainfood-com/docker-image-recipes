@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 hostuser_home="$(getent passwd hostuser | cut -f 6 -d :)"
 

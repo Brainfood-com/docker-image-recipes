@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 if [[ $(find /var/lib/postgresql -maxdepth 1 -mindepth 1|wc -l) = 0 ]]; then
 	zcat /var/lib/container/var_lib_postgresql.tar.gz | tar xf - -C /var/lib/postgresql
