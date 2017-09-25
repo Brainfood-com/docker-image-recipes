@@ -2,6 +2,8 @@
 
 set -e
 
+PG_VERSION=9.6
+
 if [[ $(find /var/lib/postgresql -maxdepth 1 -mindepth 1|wc -l) = 0 ]]; then
 	zcat /var/lib/container/var_lib_postgresql.tar.gz | tar xf - -C /var/lib/postgresql
 fi
@@ -11,13 +13,30 @@ postgres_home="$(getent passwd postgres | cut -f 6 -d :)"
 if [[ $GID && $GID -ne 0 ]]; then
 	old_gid=$(getent group postgres | cut -f 3 -d :)
 	groupmod -g $GID postgres
-	find "$postgres_home" /etc/postgresql /var/run/postgresql -gid $old_gid -print0 | xargs -0r chgrp postgres
+	find "$postgres_home" /etc/postgresql /var/log/postgresql /var/run/postgresql -gid $old_gid -print0 | xargs -0r chgrp postgres
 fi
 
 if [[ $UID && $UID -ne 0 ]]; then
 	old_uid=$(getent passwd postgres | cut -f 3 -d :)
 	usermod -u $UID postgres
-	find /etc/postgresql /var/run/postgresql -uid $old_uid -print0 | xargs -0r chown postgres
+	find /etc/postgresql /var/log/postgresql /var/run/postgresql -uid $old_uid -print0 | xargs -0r chown postgres
 fi
+
+declare -i i=0
+started=
+
+while eval [[ \$DB_INFO_$i ]]; do
+	if [[ -z $started ]]; then
+		pg_ctlcluster $PG_VERSION main start -o '"-h \"localhost\""'
+		started=1
+	fi
+	IFS=: eval declare -a DB_INFO=\(\$DB_INFO_$i\)
+	echo "database=${DB_INFO[0]} user=${DB_INFO[1]} password=${DB_INFO[2]}" 1>&2
+	sudo -u postgres createdb "${DB_INFO[0]}" 2>/dev/null || true
+	sudo -u postgres createuser "${DB_INFO[1]}" 2>/dev/null || true
+	sudo -u postgres psql -c "ALTER USER \"${DB_INFO[1]}\" PASSWORD '${DB_INFO[2]}'"
+	i=$(($i + 1))
+done
+[[ $started ]] && pg_ctlcluster $PG_VERSION main stop
 
 exec "$@"

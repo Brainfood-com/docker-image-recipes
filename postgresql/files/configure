@@ -2,14 +2,21 @@
 
 set -e
 
+PG_VERSION=9.6
+
 mkdir /usr/share/man/man1 /usr/share/man/man7
 cp /tmp/files/no-suggests-recommends.conf /etc/apt/apt.conf.d/no-suggests-recommends
 apt-get update
-apt-get install -y postgresql-9.6 \
+apt-get install -y sudo ssmtp postgresql-$PG_VERSION \
 	$POSTGRESQL_EXTRA_PACKAGES \
 	&& true
 
 rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+
+mkdir -p /etc/postgresql/$PG_VERSION/main/conf.d
+echo "include_dir 'conf.d'" >> /etc/postgresql/$PG_VERSION/main/postgresql.conf
+cp /tmp/files/postgresql.d.conf /etc/postgresql/$PG_VERSION/main/conf.d/docker.conf
+echo "host all all samenet md5" >> /etc/postgresql/$PG_VERSION/main/pg_hba.conf
 
 mkdir /var/lib/container
 tar -cC /var/lib/postgresql/ . | gzip -9v > /var/lib/container/var_lib_postgresql.tar.gz
