@@ -2,8 +2,8 @@
 
 set -e
 
-TARGET_USER=hostuser
-TARGET_GROUP=hostgroup
+TARGET_USER=java
+TARGET_GROUP=java
 
 target_home="$(getent passwd "$TARGET_USER" | cut -f 6 -d :)"
 
