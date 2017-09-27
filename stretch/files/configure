@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -e
+apt-get update
+apt-get install -y ssmtp sudo $STRETCH_EXTRA_PACKAGES
+
+cp /tmp/files/entrypoint /sbin/entrypoint
+
+addgroup hostgroup
+adduser --gecos 'Host User' --ingroup hostgroup --disabled-password hostuser
+
+rm -rf /tmp/files
