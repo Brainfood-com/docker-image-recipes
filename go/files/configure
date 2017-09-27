@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -e
+apt-get update
+apt-get install -y ssmtp sudo git golang-go golang-1.8-go $GO_EXTRA_PACKAGES
+
+addgroup go
+adduser --gecos 'go' --ingroup go --disabled-password go
+
+cp /tmp/files/entrypoint /sbin/entrypoint
+
+rm -rf /tmp/files
