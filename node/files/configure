@@ -8,6 +8,9 @@ cp /tmp/files/nodesource.gpg.key /etc/apt/trusted.gpg.d/nodesource.asc
 apt-get update
 
 apt-get install -y ssmtp sudo nodejs npm $NODE_EXTRA_PACKAGES
+if ! [ "z$NPM_VERSION" = "z" ]; then
+	npm install -g "npm@$NPM_VERSION"
+fi
 
 if ! [ "z$NPM_GLOBAL_INSTALL" = "z" ]; then
 	npm install -g $NPM_GLOBAL_INSTALL
